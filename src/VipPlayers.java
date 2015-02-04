@@ -7,7 +7,6 @@ public class Players
     public boolean winCategory1 = false;
     public boolean winCategory2 = false;
     protected double origin = 5;
-    //khig879
     public Players (String aCategory)
     {
         if (aCategory.equalsIgnoreCase("A") || aCategory.equalsIgnoreCase("B") ||

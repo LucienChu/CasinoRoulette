@@ -59,7 +59,7 @@ public class EuropeanRoulette
         this.players = players;
     }
 
-    
+
     @Override
     public String toString() {
         return "EuropeanRoulette{" +
