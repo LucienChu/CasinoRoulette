@@ -1,14 +1,15 @@
 import java.util.Arrays;
-
-/**
- * Created by Steven on 2015-02-04.
- */
 public class EuropeanRoulette
 {
-    public int [] numbers = new int[37];
-    Players players[] = new Players[6];
+    public static int total = 37;
+    public int [] numbers = new int[38];
+    Players [] players;
+    public EuropeanRoulette()
+    {
+        players = null;
+    }
 
-    public EuropeanRoulette ()
+    public EuropeanRoulette(Players[] players)
     {
         numbers[0] =0;
         numbers[1] =32;
@@ -38,32 +39,66 @@ public class EuropeanRoulette
         numbers[25] =14;
         numbers[26] =31;
         numbers[27] =9;
-        numbers[28] =20;
-        numbers[29] =22;
-        numbers[30] =18;
-        numbers[31] =29;
-        numbers[32] =7;
-        numbers[33] =28;
-        numbers[34] =12;
-        numbers[35] =35;
-        numbers[36] = 3;
-        numbers[37] = 26;
-
+        numbers[28] =22;
+        numbers[29] =18;
+        numbers[30] =29;
+        numbers[31] =7;
+        numbers[32] =28;
+        numbers[33] =12;
+        numbers[34] =35;
+        numbers[35] =3;
+        numbers[36] = 26;
+    }
+    public void sortPlayers()
+    {
+        int start = 0;
+        int last = 1;
+        Players regObject = new Players();
+        VipPlayers vipObject = new VipPlayers();
+        Players [] temp = new Players[this.getNumOfPlayers()];
+        for (int i = 0; i < this.getNumOfPlayers(); i++)
+        {
+            if (players[i].getClass() == vipObject.getClass())
+            {
+                temp[start] = players[i];
+                start++;
+            }
+            else
+            {
+                temp[this.getNumOfPlayers() - last] = players[i];
+                last++;
+            }
+        }
+        this.players = temp;
+    }
+    public int getNumOfPlayers()
+    {
+        return players.length;
     }
 
-    public Players[] getPlayers() {
-        return players;
+    public void addPlayer(Players newPlayer)
+    {
+        if (this.players == null)
+        {
+            int i = 1;
+            Players [] temp = new Players[1];
+            temp[0] = newPlayer;
+            this.players = temp;
+
+        }
+        else
+        {
+            Players [] temp = new Players[this.players.length + 1];
+
+            for (int i = 0; i < players.length; i++)
+                temp[i] = players[i];
+            temp[this.players.length] = newPlayer;
+            this.players = temp;
+        }
     }
-
-    public void setPlayers(Players[] players) {
-        this.players = players;
-    }
-
-
-    @Override
     public String toString() {
-        return "EuropeanRoulette{" +
-                "players=" + Arrays.toString(players) +
-                '}';
+        return "EuropeanRoulette [numbers=" + Arrays.toString(numbers);
     }
+
+
 }

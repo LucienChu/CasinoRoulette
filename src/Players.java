@@ -1,61 +1,123 @@
 import java.util.Arrays;
-
-
 public class Players
 {
-    public int [] bets = new int [6];
-    public String category = " ";
+    public int [] bets;
+    public String [] category;
     public boolean winNumber = false;
     public boolean payOnce = false;
     public boolean payTwice = false;
+    public int countForOnce = 0;
+    public int countForTwice = 0;
     protected double origin = 5;
-    public Players (int [] Bets,String aCategory)
+    public Players()
     {
-        if(aCategory != null && ((aCategory.equalsIgnoreCase("A") || aCategory.equalsIgnoreCase("B") ||
-                aCategory.equalsIgnoreCase("C") || aCategory.equalsIgnoreCase("D") ||
-                aCategory.equalsIgnoreCase("E") || aCategory.equalsIgnoreCase("F") ||
-                aCategory.equalsIgnoreCase("G") || aCategory.equalsIgnoreCase("G") ||
-                aCategory.equalsIgnoreCase("H") || aCategory.equalsIgnoreCase("I") ||
-                aCategory.equalsIgnoreCase("J") || aCategory.equalsIgnoreCase("K"))))
-            this.category = aCategory;
-        if (Bets != null || bets.length != 0)
+        bets = null;
+        category = null;
+    }
+
+    public Players (int [] Bets,String [] aCategory)
+    {
+        String [] temp1 = new String [aCategory.length];
+        for (int i = 0; i < aCategory.length; i++)
+            temp1[i] = aCategory[i];
+
+        category = temp1;
+
+        int [] temp2 = new int[Bets.length];
+        for (int i = 0; i < Bets.length; i++)
+            temp2[i] = Bets[i];
+        this.bets = temp2;
+
+        //sort the array bets to facilitate later
+        //evaluation
+
+        for (int i = 0; i < bets.length; i++)
         {
-            if (Bets.length <= bets.length)
+            int larger = 0;
+            for (int j = i + 1; j < bets.length; j++)
             {
-                int[] temp = new int [Bets.length];
-                for (int i = 0; i < Bets.length; i++)
-                    temp[i] = Bets[i];
-                this.bets = temp;
-            }
-            //sort the array to facilitate later
-            //evaluation.
-            for (int i = 0; i < bets.length; i++)
-            {
-                int larger = 0;
-                for (int j = i + 1; j < bets.length; j++)
+                if (bets[i] < bets[j])
                 {
-                    if (bets[i] < bets[j])
-                    {
-                        larger = bets[j];
-                        bets[j] = bets[i];
-                        bets[i] = larger;
-                    }
+                    larger = bets[j];
+                    bets[j] = bets[i];
+                    bets[i] = larger;
                 }
             }
         }
     }
+
     public int getNumbersOfBet()
     {
-        int numberOfBet = 0;
-        if (bets != null)
-            numberOfBet = bets.length;
-        else if (this.category.length() != 0 && this.category.length() < 2)
-            numberOfBet = 1;
-        return numberOfBet;
+        int numbersOfBet = 0;
+        if ( category != null && bets != null)
+            numbersOfBet = category.length + bets.length;
+        else if (category == null && bets != null)
+            numbersOfBet = bets.length;
+        else if (category != null && bets == null)
+            numbersOfBet = category.length;
+        else
+            numbersOfBet = 0;
+        return (numbersOfBet);
     }
-    public void getItNum(int x)
+
+    public void addBet(int newBet)
     {
-        if (this.getNumbersOfBet() != 0)
+        if (this.bets == null || bets.length == 0)
+        {
+            int i = 1;
+            int [] temp = new int[1];
+            temp[0] = newBet;
+            this.bets = temp;
+
+        }
+        else
+        {
+            int [] temp = new int[bets.length + 1];
+
+            for (int i = 0; i < bets.length; i++)
+                temp[i] = bets[i];
+            temp[bets.length] = newBet;
+            this.bets = temp;
+        }
+    }
+    public void addCategory(String newCat)
+    {
+        if (category == null)
+        {
+            int i = 1;
+            String [] temp = new String[1];
+            temp[0] = newCat;
+            this.category = temp;
+
+        }
+        else
+        {
+            String [] temp = new String[category.length + 1];
+
+            for (int i = 0; i < category.length; i++)
+                temp[i] = category[i];
+            temp[category.length] = newCat;
+            this.category = temp;
+        }
+    }
+
+
+    public void setPlayer(int[] otherBet, String [] otherCategory)
+    {
+        String [] temp1 = new String [otherCategory.length];
+        for (int i = 0; i < otherCategory.length; i++)
+            temp1[i] = otherCategory[i];
+
+        category = temp1;
+
+        int [] temp2 = new int[otherBet.length];
+        for (int i = 0; i < otherBet.length; i++)
+            temp2[i] = otherBet[i];
+        this.bets = temp2;
+    }
+    public void winNum(int x)
+    {
+        if (this.bets != null)
         {
             for (int i = 0; i < bets.length; i++)
             {
@@ -63,43 +125,51 @@ public class Players
                     winNumber = true;
             }
         }
+        else
+            winNumber = false;
     }
-    public void getItCat(String a)
-    {
-        if (a.equalsIgnoreCase("A") || a.equalsIgnoreCase("B") || a.equalsIgnoreCase("C") ||
-                a.equalsIgnoreCase("D") || a.equalsIgnoreCase("E") || a.equalsIgnoreCase("F"))
-            this.payTwice = true;
-        else if (a.equalsIgnoreCase("G") || a.equalsIgnoreCase("H") || a.equalsIgnoreCase("I") ||
-                a.equalsIgnoreCase("J") || a.equalsIgnoreCase("K") || a.equalsIgnoreCase("L"))
-            this.payOnce = true;
-    }
+
     public boolean equals(Players otherPlayer)
     {
-        boolean equals = false;
-        int sameValue = 0;
-        if (this.bets != null && this.getNumbersOfBet() == otherPlayer.getNumbersOfBet()
+        boolean equalsNum = false;
+        boolean equalsCat = false;
+        int sameNumValue = 0;
+        int sameCatValue = 0;
+        if (this.getNumbersOfBet() == otherPlayer.getNumbersOfBet()
                 && this.getClass() == otherPlayer.getClass())
         {
             for (int i = 0; i < this.getNumbersOfBet(); i++)
                 if (this.bets[i] == otherPlayer.bets[i])
-                    sameValue = sameValue + 1;
-            if (sameValue == this.getNumbersOfBet())
-                equals = true;
+                    sameNumValue = sameNumValue + 1;
+            if (sameNumValue == this.getNumbersOfBet())
+                equalsNum = true;
         }
-        else if (this.category.equalsIgnoreCase(otherPlayer.category))
-            equals = true;
+        if (this.category.length == otherPlayer.category.length)
+        {
+            for (int i = 0; i < this.category.length; i++)
+                for (int j = 0; j < this.category.hashCode(); j++)
+                    if (this.category[i].equalsIgnoreCase(otherPlayer.category[i]))
+                        sameCatValue++;
+            if (sameCatValue == this.category.length)
+                equalsCat = true;
 
-        return equals;
+        }
+        return (equalsCat && equalsNum);
     }
 
     public boolean isStraight()
     {
-        return (bets.length == 1 && this.winNumber);
+        boolean isStraight;
+        if (this.bets == null)
+            isStraight = false;
+        else
+            isStraight = (bets.length == 1 && this.winNumber);
+        return isStraight;
     }
     public boolean isSplit()
     {
         boolean adjoint = false;
-        if (bets.length == 2)
+        if (bets != null && bets.length == 2)
         {
             int diff = 0, i = 0;
             diff = bets[i] - bets[i+1];
@@ -111,7 +181,7 @@ public class Players
     public boolean isStreet()
     {
         boolean street = false;
-        if (bets.length == 3 && bets[0] % 3 == 0 &&
+        if ( (bets!= null) && (bets.length == 3) && (bets[0] % 3 == 0) &&
                 (((bets[0] - bets[1]) + (bets[0] - bets[2])) == 3))
             street = true;
         return street;
@@ -120,111 +190,105 @@ public class Players
     {
         boolean square = false;
         int sum = 0;
-        for (int i = 1; i < bets.length; i++)
-            sum = bets[0] - bets[i] + sum;
-        if (sum == 8)
-            square = true;
+        if (bets != null && bets.length == 4)
+        {
+            for (int i = 1; i < bets.length; i++)
+                sum = bets[0] - bets[i] + sum;
+            if (sum == 8)
+                square = true;
+        }
         return (square);
     }
     public boolean isDoubleStreet()
     {
         boolean doubleStreet = false;
         int sum = 0;
-        for (int i = 1; i < bets.length; i++)
-            sum = bets[0] - bets[i] + sum;
-        if (sum == 15)
-            doubleStreet = true;
+        if (bets != null && bets.length == 6)
+        {
+            for (int i = 1; i < bets.length; i++)
+                sum = bets[0] - bets[i] + sum;
+            if (sum == 15)
+                doubleStreet = true;
+        }
         return doubleStreet;
     }
-    public boolean isCategory1(int x)
+    public void isPayOnce(int x)
     {
-        boolean category1 = false;
-        boolean category2 = false;
-        if ((x % 2 == 0 && category.equalsIgnoreCase("A") ||
-                x % 2 == 1 && category.equalsIgnoreCase("B")) ||
-                ((x == 1 || x == 3 || x == 5 || x == 7 || x == 9||
-                        x == 12 || x == 14 || x == 16 || x == 18 || x == 19||
-                        x == 21 || x == 23 || x == 25 || x == 27 || x == 30||
-                        x == 32 || x == 34 || x == 36 ) &&
-                        category.equalsIgnoreCase("C")) ||
-                ((x == 2 || x == 4 || x == 6 || x == 8 || x == 10||
-                        x == 11 || x == 13 || x == 15 || x == 17 || x == 20||
-                        x == 22 || x == 24 || x == 26 || x == 28 || x == 31||
-                        x == 33 || x == 35 ) &&
-                        category.equalsIgnoreCase("D")) ||
-                ((18<= x && x > 0 && category.equalsIgnoreCase("E") ||
-                        (36 <= x && x > 18 && category.equalsIgnoreCase("F")))))
-            category1 = true;
-        else if ((x%3 ==0 && category.equalsIgnoreCase("G"))||
-                (x%3 == 1 && category.equalsIgnoreCase("H"))||
-                (x%3 == 0 && category.equalsIgnoreCase("I"))||
-                ((0 < x && x<13) && category.equalsIgnoreCase("J"))||
-                ((12 < x && x<25) && category.equalsIgnoreCase("K"))||
-                ((26 < x && x<37) && category.equalsIgnoreCase("J")))
-            category2 = true;
+        int countOnce = 0;
+        if (category != null)
+        {
+            for (int i = 0; i < category.length; i++)
+            {
+                if ((x % 2 == 0 && category[i].equalsIgnoreCase("A") ||
+                        x % 2 == 1 && category[i].equalsIgnoreCase("B")) ||
+                        ((x == 1 || x == 3 || x == 5 || x == 7 || x == 9||
+                                x == 12 || x == 14 || x == 16 || x == 18 || x == 19||
+                                x == 21 || x == 23 || x == 25 || x == 27 || x == 30||
+                                x == 32 || x == 34 || x == 36 ) &&
+                                category[i].equalsIgnoreCase("C")) ||
+                        ((x == 2 || x == 4 || x == 6 || x == 8 || x == 10||
+                                x == 11 || x == 13 || x == 15 || x == 17 || x == 20||
+                                x == 22 || x == 24 || x == 26 || x == 28 || x == 31||
+                                x == 33 || x == 35 ) &&
+                                category[i].equalsIgnoreCase("D")) ||
+                        (( x <= 18 && x > 0 && category[i].equalsIgnoreCase("E") ||
+                                (( x <= 36 && x > 18 && category[i].equalsIgnoreCase("F"))))))
+                {
+                    payOnce = true;
+                    countOnce++;
+                }
+            }
+        }
+        countForOnce = countOnce;
 
-        return (false);
     }
-    public boolean isCategory2(int y)
+    public void isPayTwice(int x)
     {
-        return (false);
+        int countTwice = 0;
+        if (category != null)
+        {
+            for (int i = 0; i < category.length; i++)
+                if ((x%3 ==0 && category[i].equalsIgnoreCase("G"))||
+                        (x%3 == 1 && category[i].equalsIgnoreCase("H"))||
+                        (x%3 == 0 && category[i].equalsIgnoreCase("I"))||
+                        ((0 < x && x<13) && category[i].equalsIgnoreCase("J"))||
+                        ((12 < x && x<25) && category[i].equalsIgnoreCase("K"))||
+                        ((26 < x && x<37) && category[i].equalsIgnoreCase("J")))
+                {
+                    payTwice = true;
+                    countTwice ++;
+                }
+        }
+        countForTwice = countTwice;
     }
+
     public double getPay()
     {
-        double value = 0;
-        if (this.bets != null && this.category == null)
-        {
-            if (this.isStraight() && this.winNumber)
-                value = origin*35;
-            else if (this.isSplit() && this.winNumber)
-                value = origin*17;
-            else if (this.isStreet() && this.winNumber)
-                value = origin*11;
-            else if (this.isSquare())
-                value = origin*8;
-            else if (this.isDoubleStreet() && this.winNumber)
-                value = origin*5;
-        }
-        else if (this.bets == null && this.category != null)
-        {
-            if (this.payOnce)
-                value = origin*1;
-            else if (this.payTwice)
-                value = origin*2;
-        }
-        return (value);
+        double winNumPay = 0;
+        double winCatPay = 0;
 
+        if (this.isStraight() && this.winNumber)
+            winNumPay = origin*35;
+        else if (this.isSplit() && this.winNumber)
+            winNumPay = origin*17;
+        else if (this.isStreet() && this.winNumber)
+            winNumPay = origin*11;
+        else if (this.isSquare())
+            winNumPay = origin*8;
+        else if (this.isDoubleStreet() && this.winNumber)
+            winNumPay = origin*5;
+        if (this.payOnce)
+            winCatPay = origin*1*this.countForOnce;
+        else if (this.payTwice)
+            winCatPay = origin*2*this.countForTwice;
+        return (winCatPay + winNumPay);
     }
+
     public String toString()
     {
-        String aString = " ";
-        if (this.bets != null && category == null)
-            aString = "bets= " + Arrays.toString(bets) + " wins " + getPay();
-        else if (category.equalsIgnoreCase("A"))
-            aString = "bets on even number, wins " + getPay();
-        else if (category.equalsIgnoreCase("B"))
-            aString = "bets on odd number, wins " + getPay();
-        else if (category.equalsIgnoreCase("C"))
-            aString = "bets on red color, wins " + getPay();
-        else if (category.equalsIgnoreCase("D"))
-            aString = "bets on black color, wins " + getPay();
-        else if (category.equalsIgnoreCase("E"))
-            aString = "bets on the first 18 numbers, wins " + getPay();
-        else if (category.equalsIgnoreCase("F"))
-            aString = "bets on the last 18 numbers, wins " + getPay();
-        else if (category.equalsIgnoreCase("G"))
-            aString = "bets on the first column, wins " + getPay();
-        else if (category.equalsIgnoreCase("H"))
-            aString = "bets on the second column, wins " + getPay();
-        else if (category.equalsIgnoreCase("I"))
-            aString = "bets on the last column, wins " + getPay();
-        else if (category.equalsIgnoreCase("J"))
-            aString = "bets on the first 12 numbers, wins " + getPay();
-        else if (category.equalsIgnoreCase("K"))
-            aString = "bets on the second 12 numbers, wins " + getPay();
-        else if (category.equalsIgnoreCase("L"))
-            aString = "bets on the last 12 numbers, wins " + getPay();
-        return aString;
+        return "[bets=" + Arrays.toString(bets) + ", category="
+                + Arrays.toString(category) + ", wins " + this.getPay();
     }
+
 
 }
